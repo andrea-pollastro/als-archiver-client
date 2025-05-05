@@ -3,46 +3,39 @@ import pandas as pd
 
 class PV:
     """
-    Represents a Process Variable (PV) retrieved from an EPICS Archiver.
-
-    Attributes:
-        name (str): PV name.
-        raw_data (pd.DataFrame): Raw time-series data retrieved from the archiver.
-        properties (pd.DataFrame): Metadata returned by the archiver for this PV.
-        clean_data (pd.DataFrame): Cleaned and interpolated time-series data.
-        first_timestamp (pd.Timestamp): First timestamp in the raw data.
-        last_timestamp (pd.Timestamp): Last timestamp in the raw data.
-        archiving_policy (ArchivingPolicy): Frequency level of the archived PV.
+    This class represents the PV entity.
     
-    Notes:
-        Only `clean_data` and `archiving_policy` are mutable after initialization.
-        Directly modifying these is discouraged unless you're extending the package.
+    Properties:
+    - name, str: pv name.
+    - raw_data, pd.DataFrame: raw data downloaded from the archiver.
+    - properties, pd.DataFrame: pv properties as reported into the archiver.
+    - clean_data, pd.DataFrame: cleaned data (with missing values imputed).
+    - first_timestamp: pd.Timestamp: first timestamp of the timespan covered by the data.
+    - last_timestamp: pd.Timestamp: last timestamp of the timespan covered by the data.
+    - archiving_policy, ArchivingPolicy: archiving policy as reported on the archiver.
+    Methods:
+    - getter of the attributes
+    - setter only of attributes clean_data and archiving_policy. It is suggested to don't
+      change this values outside the other classes of the same package.
     """
     def __init__(self, name: str, raw_data: pd.DataFrame, properties: pd.DataFrame):
-        """
-        Initialize a PV instance.
-
-        Parameters:
-            name (str): Name of the PV.
-            raw_data (pd.DataFrame): Raw time-series data (indexed by timestamp).
-            properties (pd.DataFrame): Metadata as returned by the archiver server.
-        """
         self.__name: str = name
         self.__raw_data: pd.DataFrame = raw_data
         self.__properties: pd.DataFrame = properties
-        self.__clean_data: pd.DataFrame = None # type: ignore
+        self.__clean_data: pd.DataFrame = None  # type: ignore
         self.__first_timestamp: pd.Timestamp = raw_data.index[0] # type: ignore
         self.__last_timestamp: pd.Timestamp = raw_data.index[-1] # type: ignore
 
         def __extract_archiving_policy(pv_properties: pd.DataFrame) -> ArchivingPolicy:
             """
-            Determine the ArchivingPolicy from PV properties.
+            Private function, it returns the archiving policy stored in the pv properties 
+            in input as ArchivingPolicy object.
 
-            Parameters:
-                pv_properties (pd.DataFrame): The metadata DataFrame from the archiver.
+            params:
+            - pv_properties, pd.DataFrame:
 
-            Returns:
-                ArchivingPolicy: Parsed archiving policy.
+            returns:
+            - archiving_policy, ArchivingPolicy: archiving policy of the pv into the archiver
             """
             ap_str = pv_properties[pv_properties['name'] == 'archive']['value'].values[0]
             ap_str = ap_str.lower().strip().replace('controlled', '')
@@ -59,7 +52,6 @@ class PV:
                 case 'veryslow':
                     ap = ArchivingPolicy.VERYSLOW
             return ap
-        
         self.__archiving_policy: ArchivingPolicy = __extract_archiving_policy(properties)
 
     @property

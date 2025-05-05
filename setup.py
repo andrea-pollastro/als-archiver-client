@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="als-archiver-client",
-    version="1.0.1",
+    version="1.0.2",
     author="Andrea Pollastro",
     author_email="apollastro@lbl.gov",
     description="A Python package for interacting with the ALS archiver.",
