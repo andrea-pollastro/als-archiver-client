@@ -9,7 +9,6 @@ A Python library for interacting with EPICS archiver data. This tool allows you 
 - [🤝 Contributing](#-contributing)
 - [📝 Citing](#-citing)
 - [📄 License](#-license)
-- [💬 Support](#-support)
 
 ## ⚙️ Installation
 
