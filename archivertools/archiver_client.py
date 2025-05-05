@@ -9,18 +9,18 @@ import warnings
 
 class ArchiverClient:
     """
-    This class manages the interaction between the users and the archiver.
+    Client interface for downloading and processing EPICS Archiver data.
 
-    Properties (private):
-    - __data_downloader: DataDownloader object
-    - __data_preprocesser: DataPreprocesser object
-
-    Methods (see function's docs for more info):
-    - __match_data: it matches data for a given list of PVs.
-    - download_data: it downloads data from a URL.
-    - match_data: it matches data for a given list of PVs (string or PV objects).
+    This class handles communication with the EPICS archiver server and provides
+    cleaned, timestamp-aligned data as `PV` objects or pandas DataFrames.
     """
-    def __init__(self, archiver_url: str = 'https://controls-web.als.lbl.gov'):
+    def __init__(self, archiver_url: str):
+        """
+        Initialize the ArchiverClient.
+
+        Parameters:
+        - archiver_url (str): Base URL of the EPICS archiver server.
+        """
         self.__data_downloader = DataDownloader(archiver_url=archiver_url)
         self.__data_preprocesser = DataPreprocesser()
 
@@ -30,17 +30,17 @@ class ArchiverClient:
                             end: datetime,
                             verbose: bool = False) -> PV:
         """
-        This function data downloaded from the archiver.
+        Download and clean data for a single PV from the archiver.
 
-        params:
-        - pv_name, str: pv name.
-        - precision, int: data rate precision (ms)
-        - start, datetime.datetime: start datetime in PST.
-        - end, datetime.datetime: end datetime in PST.
-        - verbose, bool (default, False): verbose level.
+        Parameters:
+        - pv_name (str): Name of the Process Variable (PV).
+        - precision (int): Temporal resolution in milliseconds.
+        - start (datetime): Start time of the query (in PST).
+        - end (datetime): End time of the query (in PST).
+        - verbose (bool): If True, print archiver responses and progress.
 
-        returns:
-        - pv, PV: pv data as PV object.
+        Returns:
+        - PV: A PV object containing raw and cleaned data, metadata, and timestamps.
         """
         pv: PV =  self.__data_downloader.download_data(
             pv_name, start, end, verbose
@@ -52,36 +52,38 @@ class ArchiverClient:
                          precision: int,
                          verbose: bool = True) -> pd.DataFrame:
         """
-        Private function for calling match_data on list ov PV objects.
+        Align and merge data from multiple PV objects based on timestamps.
 
-        params:
-        - pv_list, List[PV]|List[str]: list of PVs.
-        - precision, int: data rate precision (ms)
-        - strategy, str: reduction strategy. Values admitted: 'highest', 'lowest'.
-        - verbose, bool (default, False): verbose
+        Parameters:
+        - pv_list (List[PV]): List of PV objects to match.
+        - precision (int): Temporal resolution in milliseconds.
+        - verbose (bool): If True, show progress during matching.
 
-        returns:
-        - matched_data, pd.DataFrame: matched data. Columns: [secs, nanos, [PVs]]
+        Returns:
+        - pd.DataFrame: Matched and aligned data with columns: [secs, nanos, PV1, PV2, ...]
         """
         return self.__data_preprocesser.match_data(pv_list, precision, verbose)
 
-    def match_data(self, pv_list: List[str], # type: ignore
+    def match_data(self, pv_list: List[str],
                          precision: int,
                          start: datetime, 
                          end: datetime, 
                          verbose: int = 0) -> pd.DataFrame:
         """
-        This function matches PVs defined in pv_list.
+        Download and align data for multiple PVs based on timestamps.
 
-        params:
-        - pv_list, List[PV]|List[str]: list of PVs.
-        - precision, int: data rate precision (ms).
-        - start, datetime.datetime: start datetime in PST.
-        - end, datetime.datetime: end datetime in PST.
-        - verbose, bool (default, True): verbose level, 0 to deactivate, 1 only for merge, 2 for merge and download.
+        Parameters:
+        - pv_list (List[str]): List of PV names as strings.
+        - precision (int): Temporal resolution in milliseconds.
+        - start (datetime): Start time of the query (in PST).
+        - end (datetime): End time of the query (in PST).
+        - verbose (int): Verbosity level:
+            - 0: Silent
+            - 1: Show only matching progress
+            - 2: Show download and matching progress
 
-        returns:
-        - matched_data, pd.DataFrame: matched data. Columns: [secs, nanos, [PVs]]
+        Returns:
+        - pd.DataFrame: Matched data with timestamps and PV columns.
         """
         assert all(filter(lambda x: isinstance(x, str), pv_list)), 'please use only lists of strings.'
         verbose_download = verbose == 2
@@ -92,7 +94,7 @@ class ArchiverClient:
             pbar.set_description(f"Downloading PV {pv}")
             try:
                 pv = self.download_data(pv, precision, start, end, verbose_download)
-                pv_list_obj.append(pv) # type: ignore
+                pv_list_obj.append(pv)
             except:
                 warnings.warn(f'An error occurred while fetching {pv} data. PV skipped.')
-        return self.__match_data(pv_list_obj, precision, verbose_match) # type: ignore
+        return self.__match_data(pv_list_obj, precision, verbose_match)

@@ -5,46 +5,50 @@ import pandas as pd
 
 class DataPreprocesser:
     """
-    This class preprocess (raw) data downloaded from the archiver and stored into PV objects.
+    Handles preprocessing of raw PV data retrieved from the Archiver.
 
-    Methods (see function's docs for more info):
-    - clean_data: it fills raw data with missing values according to their archiving policy. 
-    - match_data: it matches data for a given list of PVs.
+    Main responsibilities:
+    - Cleaning individual PV data by imputing missing values.
+    - Aligning (matching) multiple PVs into a single DataFrame with shared timestamps.
     """
+    
     SEP = '==================================='
     
     def clean_data(self, pv: PV, precision: int) -> PV:
         """
-        This function imputes missing values in the raw_data. Imputed data will be stored ad
-        clean_data into the pv object. 
-        
-        params:
-        - pv, PV: pv data
-        - precision, int: data rate precision (ms)
+        Fill missing values in the raw data of a PV and resample it at a fixed interval.
 
-        returns:
-        - pv, PV: imputed pv.
+        The cleaned DataFrame is stored as `clean_data` in the same PV object. Missing
+        values are forward-filled, and timestamps are formatted as strings for consistency.
+
+        Parameters:
+            pv (PV): The PV object containing raw data.
+            precision (int): Sampling resolution in milliseconds (ms).
+
+        Returns:
+            PV: The updated PV object with `clean_data` set.
         """
         pv.clean_data = pv.raw_data.drop(columns=['severity', 'status'])
         pv.clean_data = pv.clean_data.resample(f'{precision}ms').ffill()
-        pv.clean_data.index = pv.clean_data.index.strftime('%Y-%m-%d %H:%M:%S.%f') # type: ignore
+        pv.clean_data.index = pv.clean_data.index.strftime('%Y-%m-%d %H:%M:%S.%f')
         pv.clean_data['val'].iloc[0] = pv.clean_data['val'].iloc[1] # first value is always NaN
 
         return pv
     
     def match_data(self, pv_list: List[PV], precision: int, verbose: bool = False) -> pd.DataFrame:
         """
-        This function matches data listed in the list pv_list according to their timestamps.
-        Using the precision param, you can define the timestamp precision in ms to upsample/downsample the series.
+        Align and merge cleaned data from multiple PVs based on a common time index.
 
-        params:
-        - pv_list, List[PV]: list of PVs.
-        - precision, int: data rate precision (ms)
-        - strategy, str: reduction strategy. Values admitted: 'highest', 'lowest'.
-        - verbose, bool (default, False): verbose
+        Each PV is cleaned using the specified precision, and then their time-series data
+        is merged into a single DataFrame. All PVs must be cleaned before matching.
 
-        returns:
-        - matched_data, pd.DataFrame: matched data. Columns: [datetime(index), [PVs]]
+        Parameters:
+            pv_list (List[PV]): A list of PV objects to be aligned.
+            precision (int): Resampling interval in milliseconds.
+            verbose (bool): If True, print matching information.
+
+        Returns:
+            pd.DataFrame: A DataFrame with timestamp index and one column per PV name.
         """
         pbar = tqdm(pv_list)
         for pv in pbar:
