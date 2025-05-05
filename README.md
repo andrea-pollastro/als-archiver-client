@@ -4,21 +4,12 @@ A Python library for interacting with EPICS archiver data. This tool allows you 
 
 ## 📑 Table of Contents
 
-- [✨ Features](#-features)
 - [⚙️ Installation](#️-installation)
 - [🚀 Getting Started](#-getting-started)
 - [🤝 Contributing](#-contributing)
 - [📝 Citing](#-citing)
 - [📄 License](#-license)
 - [💬 Support](#-support)
-
-## ✨ Features
-
-- 📥 Download raw data from Process Variables (PVs)
-- 🧩 Impute missing values
-- 🧮 Match data from multiple PVs for defined timespans
-- 🌐 Configurable archiver server URL and timezone
-- 📊 Pandas DataFrame integration
 
 ## ⚙️ Installation
 
