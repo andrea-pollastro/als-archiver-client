@@ -66,7 +66,7 @@ policy). The parameter `precision` allows to select the precision of the individ
 Example:
 ```python
 pv_list = ['PV_NAME_1', 'PV_NAME_2']
-matched_data = client.match_data(
+matched_data = archiver.match_data(
     pv_list=pv_list,
     precision=100,
     start=datetime(year=2023, month=4, day=25, hour=22),
