@@ -30,9 +30,9 @@ class PV:
         self.__name: str = name
         self.__raw_data: pd.DataFrame = raw_data
         self.__properties: pd.DataFrame = properties
-        self.__clean_data: pd.DataFrame = None 
-        self.__first_timestamp: pd.Timestamp = raw_data.index[0]
-        self.__last_timestamp: pd.Timestamp = raw_data.index[-1]
+        self.__clean_data: pd.DataFrame = None # type: ignore
+        self.__first_timestamp: pd.Timestamp = raw_data.index[0] # type: ignore
+        self.__last_timestamp: pd.Timestamp = raw_data.index[-1] # type: ignore
 
         def __extract_archiving_policy(pv_properties: pd.DataFrame) -> ArchivingPolicy:
             """

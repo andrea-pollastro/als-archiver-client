@@ -140,12 +140,12 @@ class DataDownloader:
         if start_ts not in df['secs'].values:
             record: pd.DataFrame = df[df['secs'] < start_ts].tail(1)
             record['secs'] = start_ts
-            idx: int = int(record.index[0]) + 1
+            idx: int = int(record.index[0]) + 1 # type: ignore
             df = pd.concat([df.iloc[:idx], record, df.iloc[idx:]]).reset_index(drop=True)
         if end_ts not in df['secs'].values:
             record: pd.DataFrame = df[df['secs'] < end_ts].tail(1)
             record['secs'] = end_ts
-            idx: int = (record.index[0]) + 1
+            idx: int = (record.index[0]) + 1 # type: ignore
             df = pd.concat([df.iloc[:idx], record, df.iloc[idx:]]).reset_index(drop=True)
         left_mask: pd.Series = df['secs'] >= start_ts
         right_mask: pd.Series = df['secs'] <= end_ts

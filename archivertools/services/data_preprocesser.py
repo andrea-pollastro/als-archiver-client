@@ -30,7 +30,7 @@ class DataPreprocesser:
         """
         pv.clean_data = pv.raw_data.drop(columns=['severity', 'status'])
         pv.clean_data = pv.clean_data.resample(f'{precision}ms').ffill()
-        pv.clean_data.index = pv.clean_data.index.strftime('%Y-%m-%d %H:%M:%S.%f')
+        pv.clean_data.index = pv.clean_data.index.strftime('%Y-%m-%d %H:%M:%S.%f') # type: ignore
         pv.clean_data['val'].iloc[0] = pv.clean_data['val'].iloc[1] # first value is always NaN
 
         return pv

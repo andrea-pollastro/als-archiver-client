@@ -48,9 +48,9 @@ class ArchiverClient:
         pv = self.__data_preprocesser.clean_data(pv, precision)
         return pv
     
-    def __match_data(self, pv_list: List[PV],
-                         precision: int,
-                         verbose: bool = True) -> pd.DataFrame:
+    def __match_data(self, pv_list: List[PV], 
+                           precision: int,
+                           verbose: bool = True) -> pd.DataFrame:
         """
         Align and merge data from multiple PV objects based on timestamps.
 
@@ -64,7 +64,7 @@ class ArchiverClient:
         """
         return self.__data_preprocesser.match_data(pv_list, precision, verbose)
 
-    def match_data(self, pv_list: List[str],
+    def match_data(self, pv_list: List[str], # type: ignore
                          precision: int,
                          start: datetime, 
                          end: datetime, 
@@ -94,7 +94,7 @@ class ArchiverClient:
             pbar.set_description(f"Downloading PV {pv}")
             try:
                 pv = self.download_data(pv, precision, start, end, verbose_download)
-                pv_list_obj.append(pv)
+                pv_list_obj.append(pv) # type: ignore
             except:
                 warnings.warn(f'An error occurred while fetching {pv} data. PV skipped.')
-        return self.__match_data(pv_list_obj, precision, verbose_match)
+        return self.__match_data(pv_list_obj, precision, verbose_match) # type: ignore
