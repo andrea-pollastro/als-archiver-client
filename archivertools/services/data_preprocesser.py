@@ -28,7 +28,9 @@ class DataPreprocesser:
         pv.clean_data = pv.raw_data.drop(columns=['severity', 'status'])
         pv.clean_data = pv.clean_data.resample(f'{precision}ms').ffill()
         pv.clean_data.index = pv.clean_data.index.strftime('%Y-%m-%d %H:%M:%S.%f') # type: ignore
-        pv.clean_data['val'].iloc[0] = pv.clean_data['val'].iloc[1] # first value is always NaN
+        # Use .loc for assignment to avoid chained assignment warning
+        if len(pv.clean_data) > 1:
+            pv.clean_data.loc[pv.clean_data.index[0], 'val'] = pv.clean_data.loc[pv.clean_data.index[1], 'val']
 
         return pv
     
