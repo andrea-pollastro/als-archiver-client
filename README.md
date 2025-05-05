@@ -1,5 +1,9 @@
 # ALS Archiver Tools
 
+[![PyPI version](https://badge.fury.io/py/als-archiver-client.svg)](https://badge.fury.io/py/als-archiver-client)
+[![Python versions](https://img.shields.io/pypi/pyversions/als-archiver-client.svg)](https://pypi.org/project/als-archiver-client/)
+[![License](https://img.shields.io/pypi/l/als-archiver-client.svg)](https://pypi.org/project/als-archiver-client/)
+
 A Python library for interacting with EPICS archiver data. This tool allows you to easily download and process data from EPICS archiver servers.
 
 ## 📑 Table of Contents
