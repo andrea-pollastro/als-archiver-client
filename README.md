@@ -99,7 +99,3 @@ If you use this package in your work, please cite:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 💬 Support
-
-For support, please open an issue in the [GitHub repository](https://github.com/andrea-pollastro/als-archiver-tools) or contact the author at apollastro@lbl.gov.
