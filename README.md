@@ -26,7 +26,7 @@ pip install als-archiver-tools
 If you want to install from source:
 ```bash
 git clone https://github.com/andrea-pollastro/als-archiver-tools.git
-cd archivertools
+cd als-archiver-tools
 pip install -e .
 ```
 
